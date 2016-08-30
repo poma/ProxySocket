@@ -39,7 +39,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 	/// </summary>
 	internal sealed class Socks4Handler : SocksHandler {
 		/// <summary>
-		/// Initilizes a new instance of the SocksHandler class.
+		/// Initializes a new instance of the SocksHandler class.
 		/// </summary>
 		/// <param name="server">The socket connection with the proxy server.</param>
 		/// <param name="user">The username to use when authenticating with the server.</param>
@@ -59,7 +59,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 				throw new ArgumentNullException();
 			if (port <= 0 || port > 65535)
 				throw new ArgumentException();
-			byte [] connect = new byte[10 + Username.Length + host.Length];
+			byte[] connect = new byte[10 + Username.Length + host.Length];
 			connect[0] = 4;
 			connect[1] = 1;
 			Array.Copy(PortToBytes(port), 0, connect, 2, 2);
@@ -80,11 +80,11 @@ namespace Org.Mentalis.Network.ProxySocket {
 		private byte[] GetEndPointBytes(IPEndPoint remoteEP) {
 			if (remoteEP == null)
 				throw new ArgumentNullException();
-			byte [] connect = new byte[9 + Username.Length];
+			byte[] connect = new byte[9 + Username.Length];
 			connect[0] = 4;
 			connect[1] = 1;
 			Array.Copy(PortToBytes(remoteEP.Port), 0, connect, 2, 2);
-			Array.Copy(AddressToBytes(remoteEP.Address.Address), 0, connect, 4, 4);
+			Array.Copy(remoteEP.Address.GetAddressBytes(), 0, connect, 4, 4);
 			Array.Copy(Encoding.ASCII.GetBytes(Username), 0, connect, 8, Username.Length);
 			connect[8 + Username.Length] = 0;
 			return connect;
@@ -122,13 +122,13 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <exception cref="ProxyException">The proxy rejected the request.</exception>
 		/// <exception cref="SocketException">An operating system error occurs while accessing the Socket.</exception>
 		/// <exception cref="ObjectDisposedException">The Socket has been closed.</exception>
-		private void Negotiate(byte [] connect) {
+		private void Negotiate(byte[] connect) {
 			if (connect == null)
 				throw new ArgumentNullException();
 			if (connect.Length < 2)
 				throw new ArgumentException();
 			Server.Send(connect);
-			byte [] buffer = ReadBytes(8);
+			byte[] buffer = ReadBytes(8);
 			if (buffer[1] != 90) {
 				Server.Close();
 				throw new ProxyException("Negotiation failed.");	
@@ -230,5 +230,4 @@ namespace Org.Mentalis.Network.ProxySocket {
 		}
 	}
 }
-
 

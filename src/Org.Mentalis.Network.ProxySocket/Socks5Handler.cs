@@ -40,20 +40,20 @@ namespace Org.Mentalis.Network.ProxySocket {
 	/// </summary>
 	internal sealed class Socks5Handler : SocksHandler {
 		/// <summary>
-		/// Initiliazes a new Socks5Handler instance.
+		/// Initializes a new Socks5Handler instance.
 		/// </summary>
 		/// <param name="server">The socket connection with the proxy server.</param>
 		/// <exception cref="ArgumentNullException"><c>server</c>  is null.</exception>
 		public Socks5Handler(Socket server) : this(server, "") {}
 		/// <summary>
-		/// Initiliazes a new Socks5Handler instance.
+		/// Initializes a new Socks5Handler instance.
 		/// </summary>
 		/// <param name="server">The socket connection with the proxy server.</param>
 		/// <param name="user">The username to use.</param>
 		/// <exception cref="ArgumentNullException"><c>server</c> -or- <c>user</c> is null.</exception>
 		public Socks5Handler(Socket server, string user) : this(server, user, "") {}
 		/// <summary>
-		/// Initiliazes a new Socks5Handler instance.
+		/// Initializes a new Socks5Handler instance.
 		/// </summary>
 		/// <param name="server">The socket connection with the proxy server.</param>
 		/// <param name="user">The username to use.</param>
@@ -100,7 +100,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 				throw new ArgumentNullException();
 			if (port <= 0 || port > 65535 || host.Length > 255)
 				throw new ArgumentException();
-			byte [] connect = new byte[7 + host.Length];
+			byte[] connect = new byte[7 + host.Length];
 			connect[0] = 5;
 			connect[1] = 1;
 			connect[2] = 0; //reserved
@@ -119,12 +119,12 @@ namespace Org.Mentalis.Network.ProxySocket {
 		private byte[] GetEndPointBytes(IPEndPoint remoteEP) {
 			if (remoteEP == null)
 				throw new ArgumentNullException();
-			byte [] connect = new byte[10];
+			byte[] connect = new byte[10];
 			connect[0] = 5;
 			connect[1] = 1;
 			connect[2] = 0; //reserved
 			connect[3] = 1;
-			Array.Copy(AddressToBytes(remoteEP.Address.Address), 0, connect, 4, 4);
+			Array.Copy(remoteEP.Address.GetAddressBytes(), 0, connect, 4, 4);
 			Array.Copy(PortToBytes(remoteEP.Port), 0, connect, 8, 2);
 			return connect;
 		}
@@ -172,7 +172,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 				Server.Close();
 				throw new ProxyException(buffer[1]);
 			}
-			switch(buffer[3]) {
+			switch (buffer[3]) {
 				case 1:
 					buffer = ReadBytes(6); //IPv4 address with port
 					break;
@@ -271,7 +271,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 					Server.BeginReceive(Buffer, Received, Buffer.Length - Received, SocketFlags.None, new AsyncCallback(this.OnAuthReceive), Server);
 				} else {
 					AuthMethod authenticate;
-					switch(Buffer[1]) {
+					switch (Buffer[1]) {
 						case 0:
 							authenticate = new AuthNone(Server);
 							break;
@@ -291,7 +291,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <summary>
 		/// Called when the socket has been successfully authenticated with the server.
 		/// </summary>
-		/// <param name="e">The exception that has occured while authenticating, or <em>null</em> if no error occured.</param>
+		/// <param name="e">The exception that has occurred while authenticating, or <em>null</em> if no error occurred.</param>
 		private void OnAuthenticated(Exception e) {
 			if (e != null) {
 				ProtocolComplete(e);
@@ -348,7 +348,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <param name="buffer">The received reply</param>
 		/// <exception cref="ProtocolViolationException">The received reply is invalid.</exception>
 		private void ProcessReply(byte[] buffer) {
-			switch(buffer[3]) {
+			switch (buffer[3]) {
 				case 1:
 					Buffer = new byte[5]; //IPv4 address with port - 1 byte
 					break;

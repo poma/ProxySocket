@@ -57,7 +57,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <param name="socketType">One of the SocketType values.</param>
 		/// <param name="protocolType">One of the ProtocolType values.</param>
 		/// <exception cref="SocketException">The combination of addressFamily, socketType, and protocolType results in an invalid socket.</exception>
-		public ProxySocket (AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType) : this(addressFamily, socketType, protocolType, "") {}
+		public ProxySocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType) : this(addressFamily, socketType, protocolType, "") {}
 		/// <summary>
 		/// Initializes a new instance of the ProxySocket class.
 		/// </summary>
@@ -67,7 +67,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <param name="proxyUsername">The username to use when authenticating with the proxy server.</param>
 		/// <exception cref="SocketException">The combination of addressFamily, socketType, and protocolType results in an invalid socket.</exception>
 		/// <exception cref="ArgumentNullException"><c>proxyUsername</c> is null.</exception>
-		public ProxySocket (AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType, string proxyUsername) : this(addressFamily, socketType, protocolType, proxyUsername, "") {}
+		public ProxySocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType, string proxyUsername) : this(addressFamily, socketType, protocolType, proxyUsername, "") {}
 		/// <summary>
 		/// Initializes a new instance of the ProxySocket class.
 		/// </summary>
@@ -78,7 +78,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <param name="proxyPassword">The password to use when authenticating with the proxy server.</param>
 		/// <exception cref="SocketException">The combination of addressFamily, socketType, and protocolType results in an invalid socket.</exception>
 		/// <exception cref="ArgumentNullException"><c>proxyUsername</c> -or- <c>proxyPassword</c> is null.</exception>
-		public ProxySocket (AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType, string proxyUsername, string proxyPassword) : base(addressFamily, socketType, protocolType) {
+		public ProxySocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType, string proxyUsername, string proxyPassword) : base(addressFamily, socketType, protocolType) {
 			ProxyUser = proxyUsername;
 			ProxyPass = proxyPassword;
 			ToThrow = new InvalidOperationException();
@@ -90,7 +90,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <exception cref="ArgumentNullException">The remoteEP parameter is a null reference (Nothing in Visual Basic).</exception>
 		/// <exception cref="SocketException">An operating system error occurs while accessing the Socket.</exception>
 		/// <exception cref="ObjectDisposedException">The Socket has been closed.</exception>
-		/// <exception cref="ProxyException">An error occured while talking to the proxy server.</exception>
+		/// <exception cref="ProxyException">An error occurred while talking to the proxy server.</exception>
 		public new void Connect(EndPoint remoteEP) {
 			if (remoteEP == null)
 				throw new ArgumentNullException("<remoteEP> cannot be null.");
@@ -113,15 +113,15 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <exception cref="ArgumentException">The port parameter is invalid.</exception>
 		/// <exception cref="SocketException">An operating system error occurs while accessing the Socket.</exception>
 		/// <exception cref="ObjectDisposedException">The Socket has been closed.</exception>
-		/// <exception cref="ProxyException">An error occured while talking to the proxy server.</exception>
+		/// <exception cref="ProxyException">An error occurred while talking to the proxy server.</exception>
 		/// <remarks>If you use this method with a SOCKS4 server, it will let the server resolve the hostname. Not all SOCKS4 servers support this 'remote DNS' though.</remarks>
-		public void Connect(string host, int port) {
+		public new void Connect(string host, int port) {
 			if (host == null)
 				throw new ArgumentNullException("<host> cannot be null.");
 			if (port <= 0 || port > 65535)
 				throw new ArgumentException("Invalid port.");
 			if (this.ProtocolType != ProtocolType.Tcp || ProxyType == ProxyTypes.None || ProxyEndPoint == null)
-				base.Connect(new IPEndPoint(Dns.Resolve(host).AddressList[0], port));
+				base.Connect(new IPEndPoint(Dns.GetHostEntry(host).AddressList[0], port));
 			else {
 				base.Connect(ProxyEndPoint);
 				if (ProxyType == ProxyTypes.Socks4)
@@ -141,7 +141,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <exception cref="SocketException">An operating system error occurs while creating the Socket.</exception>
 		/// <exception cref="ObjectDisposedException">The Socket has been closed.</exception>
 		public new IAsyncResult BeginConnect(EndPoint remoteEP, AsyncCallback callback, object state) {
-			if (remoteEP == null || callback == null)
+			if (remoteEP == null)
 				throw new ArgumentNullException();
 			if (this.ProtocolType != ProtocolType.Tcp || ProxyType == ProxyTypes.None || ProxyEndPoint == null) {
 				return base.BeginConnect(remoteEP, callback, state);
@@ -150,7 +150,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 				if (ProxyType == ProxyTypes.Socks4) {
 					AsyncResult = (new Socks4Handler(this, ProxyUser)).BeginNegotiate((IPEndPoint)remoteEP, new HandShakeComplete(this.OnHandShakeComplete), ProxyEndPoint);
 					return AsyncResult;
-				} else if(ProxyType == ProxyTypes.Socks5) {
+				} else if (ProxyType == ProxyTypes.Socks5) {
 					AsyncResult = (new Socks5Handler(this, ProxyUser, ProxyPass)).BeginNegotiate((IPEndPoint)remoteEP, new HandShakeComplete(this.OnHandShakeComplete), ProxyEndPoint);
 					return AsyncResult;
 				}
@@ -169,8 +169,8 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <exception cref="ArgumentException">The port parameter is invalid.</exception>
 		/// <exception cref="SocketException">An operating system error occurs while creating the Socket.</exception>
 		/// <exception cref="ObjectDisposedException">The Socket has been closed.</exception>
-		public IAsyncResult BeginConnect(string host, int port, AsyncCallback callback, object state) {
-			if (host == null || callback == null)
+		public new IAsyncResult BeginConnect(string host, int port, AsyncCallback callback, object state) {
+			if (host == null)
 				throw new ArgumentNullException();
 			if (port <= 0 || port >  65535)
 				throw new ArgumentException();
@@ -183,7 +183,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 				if (ProxyType == ProxyTypes.Socks4) {
 					AsyncResult = (new Socks4Handler(this, ProxyUser)).BeginNegotiate(host, port, new HandShakeComplete(this.OnHandShakeComplete), ProxyEndPoint);
 					return AsyncResult;
-				} else if(ProxyType == ProxyTypes.Socks5) {
+				} else if (ProxyType == ProxyTypes.Socks5) {
 					AsyncResult = (new Socks5Handler(this, ProxyUser, ProxyPass)).BeginNegotiate(host, port, new HandShakeComplete(this.OnHandShakeComplete), ProxyEndPoint);
 					return AsyncResult;
 				}
@@ -223,7 +223,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <exception cref="SocketException">There was an error while trying to resolve the host.</exception>
 		internal IAsyncProxyResult BeginDns(string host, HandShakeComplete callback) {
 			try {
-				Dns.BeginResolve(host, new AsyncCallback(this.OnResolved), this);
+				Dns.BeginGetHostEntry(host, new AsyncCallback(this.OnResolved), this);
 				return new IAsyncProxyResult();
 			} catch {
 				throw new SocketException();
@@ -235,7 +235,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <param name="asyncResult">The result of the asynchronous operation.</param>
 		private void OnResolved(IAsyncResult asyncResult) {
 			try {
-				IPHostEntry dns = Dns.EndResolve(asyncResult);
+				IPHostEntry dns = Dns.EndGetHostEntry(asyncResult);
 				base.BeginConnect(new IPEndPoint(dns.AddressList[0], RemotePort), new AsyncCallback(this.OnConnect), State);
 			} catch (Exception e) {
 				OnHandShakeComplete(e);

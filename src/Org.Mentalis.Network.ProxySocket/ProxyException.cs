@@ -34,6 +34,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 	/// <summary>
 	/// The exception that is thrown when a proxy error occurs.
 	/// </summary>
+	[Serializable]
 	public class ProxyException : Exception {
 		/// <summary>
 		/// Initializes a new instance of the ProxyException class.
@@ -55,7 +56,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <param name="socks5Error">The error number returned by a SOCKS5 server.</param>
 		/// <returns>A string representation of the specified SOCKS5 error number.</returns>
 		public static string Socks5ToString(int socks5Error) {
-			switch(socks5Error) {
+			switch (socks5Error) {
 				case 0:
 					return "Connection succeeded.";
 				case 1:
