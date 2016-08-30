@@ -38,7 +38,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 	internal class IAsyncProxyResult : IAsyncResult {
 		/// <summary>Initializes the internal variables of this object</summary>
 		/// <param name="stateObject">An object that contains state information for this request.</param>
-		internal void Init(object stateObject) {
+		internal IAsyncProxyResult(object stateObject = null) {
 			m_StateObject = stateObject;
 			m_Completed = false;
 			if (m_WaitHandle != null)
@@ -87,7 +87,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		}
 		// private variables
 		/// <summary>Used internally to represent the state of the asynchronous request</summary>
-		internal bool m_Completed = true;
+		private bool m_Completed;
 		/// <summary>Holds the value of the StateObject property.</summary>
 		private object m_StateObject;
 		/// <summary>Holds the value of the WaitHandle property.</summary>

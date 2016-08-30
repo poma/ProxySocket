@@ -203,8 +203,13 @@ namespace Org.Mentalis.Network.ProxySocket {
 		public new void EndConnect(IAsyncResult asyncResult) {
 			if (asyncResult == null)
 				throw new ArgumentNullException();
+			// In case we called Socket.BeginConnect() directly
+			if (!(asyncResult is IAsyncProxyResult)) {
+				base.EndConnect(asyncResult);
+				return;
+			}
 			if (!asyncResult.IsCompleted)
-				throw new ArgumentException();
+				asyncResult.AsyncWaitHandle.WaitOne();
 			if (ToThrow != null)
 				throw ToThrow;
 			return;
