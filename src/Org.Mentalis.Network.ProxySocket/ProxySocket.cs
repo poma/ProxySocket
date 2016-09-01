@@ -40,6 +40,8 @@ namespace Org.Mentalis.Network.ProxySocket {
 	public enum ProxyTypes {
 		/// <summary>No proxy server; the ProxySocket object behaves exactly like an ordinary Socket object.</summary>
 		None,
+		/// <summary>A HTTPS (CONNECT) proxy server.</summary>
+		Https,
 		/// <summary>A SOCKS4[A] proxy server.</summary>
 		Socks4,
 		/// <summary>A SOCKS5 proxy server.</summary>
@@ -98,7 +100,9 @@ namespace Org.Mentalis.Network.ProxySocket {
 				base.Connect(remoteEP);
 			else {
 				base.Connect(ProxyEndPoint);
-				if (ProxyType == ProxyTypes.Socks4)
+				if (ProxyType == ProxyTypes.Https)
+					(new HttpsHandler(this, ProxyUser, ProxyPass)).Negotiate((IPEndPoint)remoteEP);
+				else if (ProxyType == ProxyTypes.Socks4)
 					(new Socks4Handler(this, ProxyUser)).Negotiate((IPEndPoint)remoteEP);
 				else if (ProxyType == ProxyTypes.Socks5)
 					(new Socks5Handler(this, ProxyUser, ProxyPass)).Negotiate((IPEndPoint)remoteEP);
@@ -124,7 +128,9 @@ namespace Org.Mentalis.Network.ProxySocket {
 				base.Connect(new IPEndPoint(Dns.GetHostEntry(host).AddressList[0], port));
 			else {
 				base.Connect(ProxyEndPoint);
-				if (ProxyType == ProxyTypes.Socks4)
+				if (ProxyType == ProxyTypes.Https)
+					(new HttpsHandler(this, ProxyUser, ProxyPass)).Negotiate(host, port);
+				else if (ProxyType == ProxyTypes.Socks4)
 					(new Socks4Handler(this, ProxyUser)).Negotiate(host, port);
 				else if (ProxyType == ProxyTypes.Socks5)
 					(new Socks5Handler(this, ProxyUser, ProxyPass)).Negotiate(host, port);
@@ -147,7 +153,10 @@ namespace Org.Mentalis.Network.ProxySocket {
 				return base.BeginConnect(remoteEP, callback, state);
 			} else {
 				CallBack = callback;
-				if (ProxyType == ProxyTypes.Socks4) {
+				if (ProxyType == ProxyTypes.Https) {
+					AsyncResult = (new HttpsHandler(this, ProxyUser, ProxyPass)).BeginNegotiate((IPEndPoint)remoteEP, new HandShakeComplete(this.OnHandShakeComplete), ProxyEndPoint);
+					return AsyncResult;
+				} else if (ProxyType == ProxyTypes.Socks4) {
 					AsyncResult = (new Socks4Handler(this, ProxyUser)).BeginNegotiate((IPEndPoint)remoteEP, new HandShakeComplete(this.OnHandShakeComplete), ProxyEndPoint);
 					return AsyncResult;
 				} else if (ProxyType == ProxyTypes.Socks5) {
@@ -180,7 +189,10 @@ namespace Org.Mentalis.Network.ProxySocket {
 				AsyncResult = BeginDns(host, new HandShakeComplete(this.OnHandShakeComplete));
 				return AsyncResult;
 			} else {
-				if (ProxyType == ProxyTypes.Socks4) {
+				if (ProxyType == ProxyTypes.Https) {
+					AsyncResult = (new HttpsHandler(this, ProxyUser, ProxyPass)).BeginNegotiate(host, port, new HandShakeComplete(this.OnHandShakeComplete), ProxyEndPoint);
+					return AsyncResult;
+				} else if (ProxyType == ProxyTypes.Socks4) {
 					AsyncResult = (new Socks4Handler(this, ProxyUser)).BeginNegotiate(host, port, new HandShakeComplete(this.OnHandShakeComplete), ProxyEndPoint);
 					return AsyncResult;
 				} else if (ProxyType == ProxyTypes.Socks5) {

@@ -43,6 +43,7 @@
     <Compile Include="Org.Mentalis.Network.ProxySocket\Authentication\AuthMethod.cs" />
     <Compile Include="Org.Mentalis.Network.ProxySocket\Authentication\AuthNone.cs" />
     <Compile Include="Org.Mentalis.Network.ProxySocket\Authentication\AuthUserPass.cs" />
+    <Compile Include="Org.Mentalis.Network.ProxySocket\HttpsHandler.cs" />
     <Compile Include="Org.Mentalis.Network.ProxySocket\IAsyncProxyResult.cs" />
     <Compile Include="Org.Mentalis.Network.ProxySocket\ProxyException.cs" />
     <Compile Include="Org.Mentalis.Network.ProxySocket\ProxySocket.cs" />
