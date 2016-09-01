@@ -6,7 +6,7 @@
     <ProjectGuid>{CC3DAC74-9921-4074-A48E-D5B1B89A1DE9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <NoStandardLibraries>false</NoStandardLibraries>
-    <AssemblyName>ClassLibrary</AssemblyName>
+    <AssemblyName>ProxySocket</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -28,7 +28,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <RootNamespace>ProxySocket</RootNamespace>
+    <RootNamespace>Org.Mentalis.Network.ProxySocket</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -50,9 +50,17 @@
     <Compile Include="Org.Mentalis.Network.ProxySocket\Socks4Handler.cs" />
     <Compile Include="Org.Mentalis.Network.ProxySocket\Socks5Handler.cs" />
     <Compile Include="Org.Mentalis.Network.ProxySocket\SocksHandler.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ProxySocket.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
     <VisualStudio AllowExistingFolder="true" />
   </ProjectExtensions>
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
+    <Exec Command="nuget pack $(ProjectFileName) -Prop Configuration=Release">
+    </Exec>
+  </Target>
 </Project>

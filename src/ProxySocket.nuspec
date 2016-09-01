@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ProxySocket</id>
+    <version>$version$</version>
+    <authors>Poma</authors>
+    <owners>Poma</owners>
+    <licenseUrl>https://raw.githubusercontent.com/poma/ProxySocket/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/poma/ProxySocket</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>A support for Socks4/Socks5/Https proxies</summary>
+    <description>
+- ProxySocket is an implementation of the SOCKS4/SOCKS5/HTTPS CONNECT protocol
+- Supports username/password authentication
+- Inherits from a standard Socket class
+	</description>
+    <releaseNotes>Added HTTPS proxy support, fixed endless receive loops, fixed EndConnect not waiting for request completion</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>ProxySocket Socks Socks4 Socks5 HTTPS Socket Proxy</tags>
+  </metadata>
+</package>
