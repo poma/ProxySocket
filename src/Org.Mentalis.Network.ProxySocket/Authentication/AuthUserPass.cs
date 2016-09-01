@@ -62,15 +62,23 @@ namespace Org.Mentalis.Network.ProxySocket.Authentication {
 			Array.Copy(Encoding.ASCII.GetBytes(Password), 0, buffer, Username.Length + 3, Password.Length);
 			return buffer;
 		}
+		private int GetAuthenticationLength() {
+			return 3 + Username.Length + Password.Length;
+		}
 		/// <summary>
 		/// Starts the authentication process.
 		/// </summary>
 		public override void Authenticate() {
-			Server.Send(GetAuthenticationBytes());
+			if (Server.Send(GetAuthenticationBytes()) < GetAuthenticationLength()) {
+				throw new SocketException(10054);
+			};
 			byte[] buffer = new byte[2];
 			int received = 0;
 			while (received != 2) {
-				received += Server.Receive(buffer, received, 2 - received, SocketFlags.None);
+				int recv = Server.Receive(buffer, received, 2 - received, SocketFlags.None);
+				if (recv == 0)
+					throw new SocketException(10054);
+				received += recv;
 			}
 			if (buffer[1] != 0) {
 				Server.Close();
@@ -84,7 +92,7 @@ namespace Org.Mentalis.Network.ProxySocket.Authentication {
 		/// <param name="callback">The method to call when the authentication is complete.</param>
 		public override void BeginAuthenticate(HandShakeComplete callback) {
 			CallBack = callback;
-			Server.BeginSend(GetAuthenticationBytes(), 0, 3 + Username.Length + Password.Length, SocketFlags.None, new AsyncCallback(this.OnSent), Server);
+			Server.BeginSend(GetAuthenticationBytes(), 0, GetAuthenticationLength(), SocketFlags.None, new AsyncCallback(this.OnSent), Server);
 			return;
 		}
 		/// <summary>
@@ -93,7 +101,8 @@ namespace Org.Mentalis.Network.ProxySocket.Authentication {
 		/// <param name="ar">Stores state information for this asynchronous operation as well as any user-defined data.</param>
 		private void OnSent(IAsyncResult ar) {
 			try {
-				Server.EndSend(ar);
+				if (Server.EndSend(ar) < GetAuthenticationLength())
+					throw new SocketException(10054);
 				Buffer = new byte[2];
 				Server.BeginReceive(Buffer, 0, 2, SocketFlags.None, new AsyncCallback(this.OnReceive), Server);
 			} catch (Exception e) {
@@ -106,7 +115,10 @@ namespace Org.Mentalis.Network.ProxySocket.Authentication {
 		/// <param name="ar">Stores state information for this asynchronous operation as well as any user-defined data.</param>
 		private void OnReceive(IAsyncResult ar) {
 			try {
-				Received += Server.EndReceive(ar);
+				int recv = Server.EndReceive(ar);
+				if (recv <= 0)
+					throw new SocketException(10054);
+				Received += recv;
 				if (Received == Buffer.Length)
 					if (Buffer[1] == 0)
 						CallBack(null);

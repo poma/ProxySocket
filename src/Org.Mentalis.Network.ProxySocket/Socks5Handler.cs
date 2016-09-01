@@ -70,7 +70,8 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <exception cref="SocketException">An operating system error occurs while accessing the Socket.</exception>
 		/// <exception cref="ObjectDisposedException">The Socket has been closed.</exception>
 		private void Authenticate() {
-			Server.Send(new byte [] {5, 2, 0, 2});
+			if (Server.Send(new byte [] {5, 2, 0, 2}) < 4)
+				throw new SocketException(10054);
 			byte[] buffer = ReadBytes(2);
 			if (buffer[1] == 255)
 				throw new ProxyException("No authentication method accepted.");
@@ -166,7 +167,8 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <exception cref="ProtocolViolationException">The proxy server uses an invalid protocol.</exception>
 		private void Negotiate(byte[] connect) {
 			Authenticate();
-			Server.Send(connect);
+			if (Server.Send(connect) < connect.Length)
+				throw new SocketException(10054);
 			byte[] buffer = ReadBytes(4);
 			if (buffer[1] != 0) {
 				Server.Close();
@@ -240,7 +242,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <param name="ar">Stores state information for this asynchronous operation as well as any user-defined data.</param>
 		private void OnAuthSent(IAsyncResult ar) {
 			try {
-				Server.EndSend(ar);
+				HandleEndSend(ar, 4);
 			} catch (Exception e) {
 				ProtocolComplete(e);
 				return;
@@ -259,9 +261,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <param name="ar">Stores state information for this asynchronous operation as well as any user-defined data.</param>
 		private void OnAuthReceive(IAsyncResult ar) {
 			try {
-				Received += Server.EndReceive(ar);
-				if (Received <= 0)
-					throw new SocketException();
+				HandleEndReceive(ar);
 			} catch (Exception e) {
 				ProtocolComplete(e);
 				return;
@@ -309,7 +309,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <param name="ar">Stores state information for this asynchronous operation as well as any user-defined data.</param>
 		private void OnSent(IAsyncResult ar) {
 			try {
-				Server.EndSend(ar);
+				HandleEndSend(ar, HandShake.Length);
 			} catch (Exception e) {
 				ProtocolComplete(e);
 				return;
@@ -328,7 +328,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <param name="ar">Stores state information for this asynchronous operation as well as any user-defined data.</param>
 		private void OnReceive(IAsyncResult ar) {
 			try {
-				Received += Server.EndReceive(ar);
+				HandleEndReceive(ar);
 			} catch (Exception e) {
 				ProtocolComplete(e);
 				return;
@@ -370,7 +370,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <param name="ar">Stores state information for this asynchronous operation as well as any user-defined data.</param>
 		private void OnReadLast(IAsyncResult ar) {
 			try {
-				Received += Server.EndReceive(ar);
+				HandleEndReceive(ar);
 			} catch (Exception e) {
 				ProtocolComplete(e);
 				return;

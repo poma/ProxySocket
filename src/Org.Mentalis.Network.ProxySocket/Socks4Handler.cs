@@ -127,7 +127,8 @@ namespace Org.Mentalis.Network.ProxySocket {
 				throw new ArgumentNullException();
 			if (connect.Length < 2)
 				throw new ArgumentException();
-			Server.Send(connect);
+			if (Server.Send(connect) < connect.Length)
+				throw new SocketException(10054);
 			byte[] buffer = ReadBytes(8);
 			if (buffer[1] != 90) {
 				Server.Close();
@@ -186,10 +187,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <param name="ar">Stores state information for this asynchronous operation as well as any user-defined data.</param>
 		private void OnSent(IAsyncResult ar) {
 			try {
-				if (Server.EndSend(ar) < Buffer.Length) {
-					ProtocolComplete(new SocketException());
-					return;
-				}
+				HandleEndSend(ar, Buffer.Length);
 			} catch (Exception e) {
 				ProtocolComplete(e);
 				return;
@@ -208,12 +206,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <param name="ar">Stores state information for this asynchronous operation as well as any user-defined data.</param>
 		private void OnReceive(IAsyncResult ar) {
 			try {
-				int received = Server.EndReceive(ar);
-				if (received <= 0) {
-					ProtocolComplete(new SocketException());
-					return;
-				}
-				Received += received;
+				HandleEndReceive(ar);
 				if (Received == 8) {
 					if (Buffer[1] == 90)
 						ProtocolComplete(null);

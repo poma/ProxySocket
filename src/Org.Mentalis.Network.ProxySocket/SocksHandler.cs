@@ -42,7 +42,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 	/// </summary>
 	internal abstract class SocksHandler {
 		/// <summary>
-		/// Initilizes a new instance of the SocksHandler class.
+		/// Initializes a new instance of the SocksHandler class.
 		/// </summary>
 		/// <param name="server">The socket connection with the proxy server.</param>
 		/// <param name="user">The username to use when authenticating with the server.</param>
@@ -57,7 +57,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <param name="port">The port to convert.</param>
 		/// <returns>An array of two bytes that represents the specified port.</returns>
 		protected byte[] PortToBytes(int port) {
-			byte [] ret = new byte[2];
+			byte[] ret = new byte[2];
 			ret[0] = (byte)(port / 256);
 			ret[1] = (byte)(port % 256);
 			return ret;
@@ -68,7 +68,7 @@ namespace Org.Mentalis.Network.ProxySocket {
 		/// <param name="address">The IP address to convert.</param>
 		/// <returns>An array of four bytes that represents the specified IP address.</returns>
 		protected byte[] AddressToBytes(long address) {
-			byte [] ret = new byte[4];
+			byte[] ret = new byte[4];
 			ret[0] = (byte)(address % 256);
 			ret[1] = (byte)((address / 256) % 256);
 			ret[2] = (byte)((address / 65536) % 256);
@@ -88,10 +88,36 @@ namespace Org.Mentalis.Network.ProxySocket {
 				throw new ArgumentException();
 			byte[] buffer = new byte[count];
 			int received = 0;
-			while(received != count) {
-				received += Server.Receive(buffer, received, count - received, SocketFlags.None);
+			while (received != count) {
+				int recv = Server.Receive(buffer, received, count - received, SocketFlags.None);
+				if (recv == 0) {
+					throw new SocketException(10054);
+				}
+				received += recv;
 			}
 			return buffer;
+		}
+		/// <summary>
+		/// Reads number of received bytes and ensures that socket was not shut down
+		/// </summary>
+		/// <param name="ar">IAsyncResult for receive operation</param>
+		/// <returns></returns>
+		protected void HandleEndReceive(IAsyncResult ar) {
+			int recv = Server.EndReceive(ar);
+			if (recv <= 0)
+				throw new SocketException(10054);
+			Received += recv;
+		}
+		/// <summary>
+		/// Verifies that whole buffer was sent successfully
+		/// </summary>
+		/// <param name="ar">IAsyncResult for receive operation</param>
+		/// <param name="expectedLength">Length of buffer that was sent</param>
+		/// <returns></returns>
+		protected void HandleEndSend(IAsyncResult ar, int expectedLength)
+		{
+			if (Server.EndSend(ar) < expectedLength)
+				throw new SocketException(10054);
 		}
 		/// <summary>
 		/// Gets or sets the socket connection with the proxy server.
