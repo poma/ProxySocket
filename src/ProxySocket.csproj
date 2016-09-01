@@ -30,6 +30,12 @@
   <PropertyGroup>
     <RootNamespace>Org.Mentalis.Network.ProxySocket</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Signature.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
@@ -54,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ProxySocket.nuspec" />
+    <None Include="Signature.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

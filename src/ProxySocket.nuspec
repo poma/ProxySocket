@@ -14,8 +14,8 @@
 - Supports username/password authentication
 - Inherits from a standard Socket class
 	</description>
-    <releaseNotes>Added HTTPS proxy support, fixed endless receive loops, fixed EndConnect not waiting for request completion</releaseNotes>
+    <releaseNotes>Added Strong Name</releaseNotes>
     <copyright>Copyright 2016</copyright>
-    <tags>ProxySocket Socks Socks4 Socks5 HTTPS Socket Proxy</tags>
+    <tags>ProxySocket Socks Socks4 Socks5 https socket proxy</tags>
   </metadata>
 </package>
