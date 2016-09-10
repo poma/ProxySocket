@@ -13,8 +13,8 @@
 - ProxySocket is an implementation of the SOCKS4/SOCKS5/HTTPS CONNECT protocol
 - Supports username/password authentication
 - Inherits from a standard Socket class
-	</description>
-    <releaseNotes>Added Strong Name</releaseNotes>
+	  </description>
+    <releaseNotes>Added xml documentation</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>ProxySocket Socks Socks4 Socks5 https socket proxy</tags>
   </metadata>
