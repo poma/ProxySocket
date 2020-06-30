@@ -1,75 +1,26 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CC3DAC74-9921-4074-A48E-D5B1B89A1DE9}</ProjectGuid>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup Label="Build">
+    <TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
     <OutputType>Library</OutputType>
-    <NoStandardLibraries>false</NoStandardLibraries>
-    <AssemblyName>ProxySocket</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\ProxySocket.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\ProxySocket.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <RootNamespace>Org.Mentalis.Network.ProxySocket</RootNamespace>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyOriginatorKeyFile>Signature.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+    
+  <PropertyGroup Label="NuGet">
+    <Version>1.1.2</Version>
+    <Authors>Poma</Authors>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/poma/ProxySocket</PackageProjectUrl>
+    <Description>- ProxySocket is an implementation of the SOCKS4/SOCKS5/HTTPS CONNECT protocol
+- Supports username/password authentication
+- Inherits from a standard Socket class</Description>
+    <PackageReleaseNotes>Added xml documentation</PackageReleaseNotes>
+    <Copyright>Copyright 2016</Copyright>
+    <PackageTags>ProxySocket Socks Socks4 Socks5 https socket proxy</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
+    <None Include="../LICENSE" Pack="true" PackagePath=""/>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Org.Mentalis.Network.ProxySocket\Authentication\AuthMethod.cs" />
-    <Compile Include="Org.Mentalis.Network.ProxySocket\Authentication\AuthNone.cs" />
-    <Compile Include="Org.Mentalis.Network.ProxySocket\Authentication\AuthUserPass.cs" />
-    <Compile Include="Org.Mentalis.Network.ProxySocket\HttpsHandler.cs" />
-    <Compile Include="Org.Mentalis.Network.ProxySocket\IAsyncProxyResult.cs" />
-    <Compile Include="Org.Mentalis.Network.ProxySocket\ProxyException.cs" />
-    <Compile Include="Org.Mentalis.Network.ProxySocket\ProxySocket.cs" />
-    <Compile Include="Org.Mentalis.Network.ProxySocket\Socks4Handler.cs" />
-    <Compile Include="Org.Mentalis.Network.ProxySocket\Socks5Handler.cs" />
-    <Compile Include="Org.Mentalis.Network.ProxySocket\SocksHandler.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ProxySocket.nuspec" />
-    <None Include="Signature.snk" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
-  <ProjectExtensions>
-    <VisualStudio AllowExistingFolder="true" />
-  </ProjectExtensions>
-  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
-    <Exec Command="nuget pack $(ProjectFileName) -Prop Configuration=Release">
-    </Exec>
-  </Target>
 </Project>
